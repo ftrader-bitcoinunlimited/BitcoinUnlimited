@@ -15,6 +15,7 @@
 #include "uint256.h"
 #include <vector>
 
+class CDataStream;
 class CNode;
 
 class CThinBlock
@@ -53,6 +54,9 @@ public:
     CXThinBlock(const CBlock &block, CBloomFilter *filter); // Use the filter to determine which txns the client has
     CXThinBlock(const CBlock &block); // Assume client has all of the transactions (except coinbase)
     CXThinBlock() {}
+
+    static bool HandleMessage(CDataStream &vRecv, CNode *pfrom, std::string strCommand, unsigned nHops);
+
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
