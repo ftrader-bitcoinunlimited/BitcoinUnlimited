@@ -277,8 +277,8 @@ bool CXThinBlock::HandleMessage(CDataStream &vRecv, CNode *pfrom, string strComm
         if (mi == mapBlockIndex.end())
         {
             Misbehaving(pfrom->GetId(), 10);
-            return error("%s from peer %s (%d) will not connect, unknown previous block %s",
-                         strCommand, pfrom->addrName.c_str(), pfrom->id, prevHash.ToString());
+            return error("%s from peer %s (%d) will not connect, unknown previous block %s", strCommand,
+                pfrom->addrName.c_str(), pfrom->id, prevHash.ToString());
         }
         CBlockIndex *pprev = mi->second;
         CValidationState state;
@@ -286,8 +286,8 @@ bool CXThinBlock::HandleMessage(CDataStream &vRecv, CNode *pfrom, string strComm
         {
             // Thin block does not fit within our blockchain
             Misbehaving(pfrom->GetId(), 100);
-            return error("%s from peer %s (%d) contextual error: %s", strCommand, pfrom->addrName.c_str(),
-                         pfrom->id, state.GetRejectReason().c_str());
+            return error("%s from peer %s (%d) contextual error: %s", strCommand, pfrom->addrName.c_str(), pfrom->id,
+                state.GetRejectReason().c_str());
         }
     }
 
@@ -323,20 +323,19 @@ bool CXThinBlock::HandleMessage(CDataStream &vRecv, CNode *pfrom, string strComm
     else
     {
         LogPrint("thin", "Received %s %s from peer %s (%d). Size %d bytes.\n", strCommand, inv.hash.ToString(),
-                 pfrom->addrName.c_str(), pfrom->id, nSizeThinBlock);
+            pfrom->addrName.c_str(), pfrom->id, nSizeThinBlock);
 
         // An expedited block or re-requested xthin can arrive and beat the original thin block request/response
         if (!pfrom->mapThinBlocksInFlight.count(inv.hash))
         {
-            LogPrint("thin", "%s %s from peer %s (%d) received but we may already have processed it\n",
-                     strCommand, inv.hash.ToString(), pfrom->addrName.c_str(), pfrom->id);
+            LogPrint("thin", "%s %s from peer %s (%d) received but we may already have processed it\n", strCommand,
+                inv.hash.ToString(), pfrom->addrName.c_str(), pfrom->id);
             LOCK(cs_main);
             fAlreadyHave = AlreadyHave(inv); // I'll still continue processing if we don't have an accepted block yet
             if (fAlreadyHave)
                 // record the bytes received from the thinblock even though we had it already
                 requester.Received(inv, pfrom, nSizeThinBlock);
         }
-
     }
 
     // Send expedited block without checking merkle root.
